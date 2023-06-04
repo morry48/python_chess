@@ -1,9 +1,18 @@
 def location2index(loc: str) -> tuple[int, int]:
     '''converts chess location to corresponding x and y coordinates'''
+    chars = list('abcdefghijklmnopqrstuvwxyz')
+    return chars.index(loc[0]) + 1, int(loc[1:])
+
+
+def isTwoCharacters(loc: str) -> bool:
+    return len(str) == 2
 
 
 def index2location(x: int, y: int) -> str:
     '''converts  pair of coordinates to corresponding location'''
+    chars = list('abcdefghijklmnopqrstuvwxyz')
+    alf = chars[x - 1]
+    return alf + str(y)
 
 
 class Piece:
@@ -13,6 +22,9 @@ class Piece:
 
     def __init__(self, pos_X: int, pos_Y: int, side_: bool):
         '''sets initial values'''
+        self.pos_x = pos_X
+        self.pos_y = pos_Y
+        self.side = side_
 
 
 Board = tuple[int, list[Piece]]
@@ -20,6 +32,10 @@ Board = tuple[int, list[Piece]]
 
 def is_piece_at(pos_X: int, pos_Y: int, B: Board) -> bool:
     '''checks if there is piece at coordinates pox_X, pos_Y of board B'''
+    for piece in B[1]:
+        if piece.pos_x == pos_X and piece.pos_y == pos_Y:
+            return True
+    return False
 
 
 def piece_at(pos_X: int, pos_Y: int, B: Board) -> Piece:
@@ -27,11 +43,16 @@ def piece_at(pos_X: int, pos_Y: int, B: Board) -> Piece:
     returns the piece at coordinates pox_X, pos_Y of board B
     assumes some piece at coordinates pox_X, pos_Y of board B is present
     '''
+    # todo in case of not found
+    for piece in B[1]:
+        if piece.pos_x == pos_X and piece.pos_y == pos_Y:
+            return piece
 
 
 class Bishop(Piece):
     def __init__(self, pos_X: int, pos_Y: int, side_: bool):
         '''sets initial values by calling the constructor of Piece'''
+        super().__init__(pos_X, pos_Y, side_)
 
     def can_reach(self, pos_X: int, pos_Y: int, B: Board) -> bool:
         '''
@@ -39,6 +60,50 @@ class Bishop(Piece):
         on board B according to rule [Rule1] and [Rule3] (see section Intro)
         Hint: use is_piece_at
         '''
+
+        # out of range
+        if pos_X > B[0] or pos_Y > B[0]:
+            return False
+
+        #  todo made func (is it exists on the diagonal)
+        if abs(self.pos_x - pos_X) != abs(self.pos_y - pos_Y):
+            return False
+
+        flg = True
+        move_x = self.pos_x
+        move_y = self.pos_y
+        while flg:
+            if move_x > B[0] or move_y > B[0]:
+                break
+
+            if self.pos_x < pos_X and self.pos_y < pos_Y:
+                move_x += 1
+                move_y += 1
+
+            elif self.pos_x > pos_X and self.pos_y < pos_Y:
+                move_x -= 1
+                move_y += 1
+
+
+            elif self.pos_x < pos_X and self.pos_y > pos_Y:
+                move_x += 1
+                move_y -= 1
+            elif self.pos_x > pos_X and self.pos_y > pos_Y:
+                move_x -= 1
+                move_y -= 1
+            else:
+                return False
+            if move_x < 1 or move_y < 1:
+                break
+            if move_x > B[0] or move_y > B[0]:
+                break
+            if is_piece_at(move_x, move_y, B):
+                encountering_piece = piece_at(move_x, move_y, B)
+                if encountering_piece.side != self.side:
+                    if encountering_piece.pos_x == pos_X and encountering_piece.pos_y == pos_Y:
+                        return True
+                return False
+        return True
 
     def can_move_to(self, pos_X: int, pos_Y: int, B: Board) -> bool:
         '''
@@ -53,28 +118,99 @@ class Bishop(Piece):
         - finally, to check [Rule4], use is_check on new board
         '''
 
+        if not self.can_reach(pos_X, pos_Y, B) or is_piece_at(pos_X, pos_Y, B):
+            return False
+        new_list = []
+        for index, piece in enumerate(B[1]):
+            if piece.pos_x == self.pos_x and piece.pos_y == self.pos_y and piece.side == self.side:
+                continue
+            if piece.pos_x == pos_X and piece.pos_y == pos_Y and piece.side != self.side:
+                continue
+            new_list.append(piece)
+        new_piece = Bishop(pos_X, pos_Y, self.side)
+        new_list.append(new_piece)
+        new_board = (B[0], new_list)
+
+        if is_check(self.side, new_board):
+            return False
+        return True
+
     def move_to(self, pos_X: int, pos_Y: int, B: Board) -> Board:
         '''
         returns new board resulting from move of this rook to coordinates pos_X, pos_Y on board B 
         assumes this move is valid according to chess rules
         '''
+        new_list = []
+        for index, piece in enumerate(B[1]):
+            if piece.pos_x == self.pos_x and piece.pos_y == self.pos_y and piece.side == self.side:
+                continue
+            if piece.pos_x == pos_X and piece.pos_y == pos_Y and piece.side != self.side:
+                continue
+            new_list.append(piece)
+        new_piece = Bishop(pos_X, pos_Y, self.side)
+        new_list.append(new_piece)
+        new_board = (B[0], new_list)
+
+        return new_board
 
 
 class King(Piece):
     def __init__(self, pos_X: int, pos_Y: int, side_: bool):
         '''sets initial values by calling the constructor of Piece'''
+        super().__init__(pos_X, pos_Y, side_)
 
     def can_reach(self, pos_X: int, pos_Y: int, B: Board) -> bool:
         '''checks if this king can move to coordinates pos_X, pos_Y on board B according to rule [Rule2] and [Rule3]'''
 
+        diff_x = abs(self.pos_x - pos_X)
+        diff_y = abs(self.pos_y - pos_Y)
+
+        # Check if the destination coordinates are within the king's range
+        if diff_x <= 1 and diff_y <= 1 and (diff_x != 0 or diff_y != 0):
+            if is_piece_at(pos_X, pos_Y, B):
+                encountering_piece = piece_at(pos_X, pos_Y, B)
+                if encountering_piece.side != self.side:
+                    return True
+            else:
+                return True
+        return False
+
     def can_move_to(self, pos_X: int, pos_Y: int, B: Board) -> bool:
         '''checks if this king can move to coordinates pos_X, pos_Y on board B according to all chess rules'''
+        if not self.can_reach(pos_X, pos_Y, B) or is_piece_at(pos_X, pos_Y, B):
+            return False
+
+        new_list = []
+        for index, piece in enumerate(B[1]):
+            if piece.pos_x == self.pos_x and piece.pos_y == self.pos_y and piece.side == self.side:
+                continue
+            if piece.pos_x == pos_X and piece.pos_y == pos_Y and piece.side != self.side:
+                continue
+            new_list.append(piece)
+        new_piece = King(pos_X, pos_Y, self.side)
+        new_list.append(new_piece)
+        new_board = (B[0], new_list)
+        if is_check(self.side, new_board):
+            return False
+        return True
 
     def move_to(self, pos_X: int, pos_Y: int, B: Board) -> Board:
         '''
         returns new board resulting from move of this king to coordinates pos_X, pos_Y on board B 
         assumes this move is valid according to chess rules
         '''
+        new_list = []
+        for index, piece in enumerate(B[1]):
+            if piece.pos_x == self.pos_x and piece.pos_y == self.pos_y and piece.side == self.side:
+                continue
+            if piece.pos_x == pos_X and piece.pos_y == pos_Y and piece.side != self.side:
+                continue
+            new_list.append(piece)
+        new_piece = King(pos_X, pos_Y, self.side)
+        new_list.append(new_piece)
+        new_board = (B[0], new_list)
+
+        return new_board
 
 
 def is_check(side: bool, B: Board) -> bool:
@@ -82,6 +218,15 @@ def is_check(side: bool, B: Board) -> bool:
     checks if configuration of B is check for side
     Hint: use can_reach
     '''
+    for piece in B[1]:
+        if piece.side == side and isinstance(piece, King):
+            king = piece
+            break
+    for present_piece in B[1]:
+        if not present_piece.side == side:
+            if present_piece.can_reach(king.pos_x, king.pos_y, B):
+                return True
+    return False
 
 
 def is_checkmate(side: bool, B: Board) -> bool:
@@ -92,6 +237,19 @@ def is_checkmate(side: bool, B: Board) -> bool:
     - use is_check
     - use can_move_to
     '''
+    if not is_check(side, B):
+        return False
+    for piece in B[1]:
+        if piece.side == side:
+            for i in range(1 + B[0]):
+                for j in range(1 + B[0]):
+                    if not piece.can_reach(i, j, B):
+                        continue
+                    if piece.can_move_to(i, j, B):
+                        new_bord = piece.move_to(i, j, B)
+                        if not is_check(side, new_bord):
+                            return False
+    return True
 
 
 def is_stalemate(side: bool, B: Board) -> bool:
@@ -109,6 +267,28 @@ def read_board(filename: str) -> Board:
     reads board configuration from file in current directory in plain format
     raises IOError exception if file is not valid (see section Plain board configurations)
     '''
+    with open(filename, 'r') as file:
+        lines = file.readlines()
+    board_size = int(lines[0].strip())
+    board = (board_size, [])
+    for index, line in enumerate(lines[1:]):
+        if index == 0:
+            side = True
+        else:
+            side = False
+        positions = line.strip().split(', ')
+        print(positions)
+        for piece in positions:
+            if not piece:
+                continue
+            piece_type = piece[0]
+            str_location = piece[1:]
+            location_tuple = location2index(str_location)
+            if piece_type == "B":
+                board[1].append(Bishop(location_tuple[0], location_tuple[1], side))
+            else:
+                board[1].append(King(location_tuple[0], location_tuple[1], side))
+    return board
 
 
 def save_board(filename: str, B: Board) -> None:
