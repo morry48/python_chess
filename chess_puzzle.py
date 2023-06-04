@@ -1,7 +1,7 @@
 def location2index(loc: str) -> tuple[int, int]:
     '''converts chess location to corresponding x and y coordinates'''
     chars = list('abcdefghijklmnopqrstuvwxyz')
-    return chars.index(loc[0]) + 1, int(loc[1:])
+    return chars.index(loc[0]) + 1, int(loc[1:].strip(","))
 
 
 def isTwoCharacters(loc: str) -> bool:
@@ -241,8 +241,8 @@ def is_checkmate(side: bool, B: Board) -> bool:
         return False
     for piece in B[1]:
         if piece.side == side:
-            for i in range(1, B[0]+1):
-                for j in range(1, B[0]+1):
+            for i in range(1, B[0] + 1):
+                for j in range(1, B[0] + 1):
                     if not piece.can_reach(i, j, B):
                         continue
                     if piece.can_move_to(i, j, B):
@@ -264,16 +264,17 @@ def is_stalemate(side: bool, B: Board) -> bool:
         return False
     for piece in B[1]:
         if piece.side == side:
-            for i in range(1, B[0]+1):
-                for j in range(1, B[0]+1):
+            for i in range(1, B[0] + 1):
+                for j in range(1, B[0] + 1):
                     if not piece.can_reach(i, j, B):
                         continue
                     if piece.can_move_to(i, j, B):
                         new_bord = piece.move_to(i, j, B)
-                        print(i,j)
+                        print(i, j)
                         if not is_check(side, new_bord):
                             return False
     return True
+
 
 def read_board(filename: str) -> Board:
     '''
@@ -290,7 +291,6 @@ def read_board(filename: str) -> Board:
         else:
             side = False
         positions = line.strip().split(', ')
-        print(positions)
         for piece in positions:
             if not piece:
                 continue
@@ -306,6 +306,23 @@ def read_board(filename: str) -> Board:
 
 def save_board(filename: str, B: Board) -> None:
     '''saves board configuration into file in current directory in plain format'''
+    with open(filename, 'w') as file:
+        # Write the board size
+        file.write(str(B[0]) + '\n')
+        while_line = ""
+        black_line = ""
+        for row in B[1]:
+            str_position = index2location(row.pos_x, row.pos_y)
+            if isinstance(row, King):
+                p_type = "K"
+            else:
+                p_type = "B"
+            if row.side:
+                while_line = while_line + p_type + str_position + ", "
+            else:
+                black_line = black_line + p_type + str_position + ", "
+        file.write(while_line + '\n')
+        file.write(black_line + '\n')
 
 
 def find_black_move(B: Board) -> tuple[Piece, int, int]:
@@ -323,6 +340,28 @@ def conf2unicode(B: Board) -> str:
     '''converts board cofiguration B to unicode format string (see section Unicode board configurations)'''
 
 
+def display_borad(B: Board) -> None:
+    print("The initial configuration is:", end="")
+    for i in range(1, B[0] + 1):
+        for j in range(1, B[0] + 1):
+            flg = False
+            for piece in B[1]:
+                if piece.pos_x == i and piece.pos_y == j:
+                    flg = True
+                    if piece.side and isinstance(piece, King):
+                        print("\u2654", end="")
+                    elif piece.side and isinstance(piece, Bishop):
+                        print("\u2657", end="")
+                    elif not piece.side and isinstance(piece, King):
+                        print("\u265A", end="")
+                    elif not piece.side and isinstance(piece, Bishop):
+                        print("\u265D", end="")
+                    break
+            if not flg:
+                print("\u2001", end="")
+        print("", end="\n")
+
+
 def main() -> None:
     '''
     runs the play
@@ -331,8 +370,26 @@ def main() -> None:
     filename = input("File name for initial configuration: ")
     ...
     '''
-    filename = input()
+    # tmp
+    # filename = input("File name for initial configuration:")
+    filename = "texttest.txt"
+    # todo validate This is not a valid file. File name for initial configuration:
     board = read_board(filename)
+    display_borad(board)
+    side = True
+    if side:
+        input_for_moving = input("Next move of White:")
+    else:
+        input_for_moving = input("Next move of Black:")
+
+    if input_for_moving == "QUIT":
+        save_filename = input("File name to store the configuration:")
+        save_board(save_filename, board)
+        print("The game configuration saved.")
+
+
+
+
 
 
 if __name__ == '__main__':  # keep this in
