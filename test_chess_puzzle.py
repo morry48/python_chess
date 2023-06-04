@@ -250,6 +250,26 @@ def test_is_checkmate_for_ng():
     assert is_checkmate(False, B3_fixed_for_false) == False
 
 
+def test_is_stalemate_true():
+    wk = King(1, 1, True)
+    bb = Bishop(1, 2, False)
+    bk = King(3, 3, False)
+    B_stalemate = (5, [wk, bb, bk])
+    assert is_stalemate(True, B_stalemate) == True
+
+    assert is_stalemate(False, B_stalemate) == False
+
+
+def test_is_stalemate_false():
+    wk = King(1, 1, True)
+    bb = Bishop(1, 2, False)
+    bk = King(4, 3, False)
+    B_stalemate = (5, [wk, bb, bk])
+    assert is_stalemate(True, B_stalemate) == False
+
+    assert is_stalemate(False, B_stalemate) == False
+
+
 def test_read_board1():
     B = read_board("board_examp.txt")
     assert B[0] == 5
