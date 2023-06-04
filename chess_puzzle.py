@@ -241,8 +241,8 @@ def is_checkmate(side: bool, B: Board) -> bool:
         return False
     for piece in B[1]:
         if piece.side == side:
-            for i in range(1 + B[0]):
-                for j in range(1 + B[0]):
+            for i in range(1, B[0]+1):
+                for j in range(1, B[0]+1):
                     if not piece.can_reach(i, j, B):
                         continue
                     if piece.can_move_to(i, j, B):
@@ -260,7 +260,20 @@ def is_stalemate(side: bool, B: Board) -> bool:
     - use is_check
     - use can_move_to 
     '''
-
+    if is_check(side, B):
+        return False
+    for piece in B[1]:
+        if piece.side == side:
+            for i in range(1, B[0]+1):
+                for j in range(1, B[0]+1):
+                    if not piece.can_reach(i, j, B):
+                        continue
+                    if piece.can_move_to(i, j, B):
+                        new_bord = piece.move_to(i, j, B)
+                        print(i,j)
+                        if not is_check(side, new_bord):
+                            return False
+    return True
 
 def read_board(filename: str) -> Board:
     '''
@@ -318,6 +331,8 @@ def main() -> None:
     filename = input("File name for initial configuration: ")
     ...
     '''
+    filename = input()
+    board = read_board(filename)
 
 
 if __name__ == '__main__':  # keep this in
