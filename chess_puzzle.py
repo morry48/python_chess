@@ -1,3 +1,6 @@
+import random
+
+
 def location2index(loc: str) -> tuple[int, int]:
     '''converts chess location to corresponding x and y coordinates'''
     chars = list('abcdefghijklmnopqrstuvwxyz')
@@ -84,7 +87,6 @@ class Bishop(Piece):
                 move_x -= 1
                 move_y += 1
 
-
             elif self.pos_x < pos_X and self.pos_y > pos_Y:
                 move_x += 1
                 move_y -= 1
@@ -118,7 +120,7 @@ class Bishop(Piece):
         - finally, to check [Rule4], use is_check on new board
         '''
 
-        if not self.can_reach(pos_X, pos_Y, B) or is_piece_at(pos_X, pos_Y, B):
+        if not self.can_reach(pos_X, pos_Y, B):
             return False
         new_list = []
         for index, piece in enumerate(B[1]):
@@ -270,7 +272,6 @@ def is_stalemate(side: bool, B: Board) -> bool:
                         continue
                     if piece.can_move_to(i, j, B):
                         new_bord = piece.move_to(i, j, B)
-                        print(i, j)
                         if not is_check(side, new_bord):
                             return False
     return True
@@ -335,31 +336,48 @@ def find_black_move(B: Board) -> tuple[Piece, int, int]:
     - use can_move_to
     '''
 
+    for piece in B[1]:
+        if not piece.side:
+            for i in range((B[0] + 1) * (B[0] + 1)):
+                a = random.randint(1, B[0])
+                b = random.randint(1, B[0])
+                if piece.can_move_to(a, b, B):
+                    return piece, a, b
+    for piece in B[1]:
+        if not piece.side:
+            for i in range(1, B[0] + 1):
+                for j in range(1, B[0] + 1):
+                    if piece.can_move_to(i, j, B):
+                        return piece, i, j
+
 
 def conf2unicode(B: Board) -> str:
-    '''converts board cofiguration B to unicode format string (see section Unicode board configurations)'''
+    '''Converts board configuration to a Unicode string for display in the terminal.'''
+    unicode_board = ""
 
-
-def display_borad(B: Board) -> None:
-    print("The initial configuration is:", end="")
-    for i in range(1, B[0] + 1):
+    for i in range(B[0], 0, -1):  # Iterate in reverse order
         for j in range(1, B[0] + 1):
-            flg = False
+            piece_found = False
+
             for piece in B[1]:
-                if piece.pos_x == i and piece.pos_y == j:
-                    flg = True
+                if piece.pos_x == j and piece.pos_y == i:
                     if piece.side and isinstance(piece, King):
-                        print("\u2654", end="")
+                        unicode_board += "\u2654"
                     elif piece.side and isinstance(piece, Bishop):
-                        print("\u2657", end="")
+                        unicode_board += "\u2657"  #
                     elif not piece.side and isinstance(piece, King):
-                        print("\u265A", end="")
+                        unicode_board += "\u265A"
                     elif not piece.side and isinstance(piece, Bishop):
-                        print("\u265D", end="")
+                        unicode_board += "\u265D"
+
+                    piece_found = True
                     break
-            if not flg:
-                print("\u2001", end="")
-        print("", end="\n")
+
+            if not piece_found:
+                unicode_board += "."
+
+        unicode_board += "\n"
+    return unicode_board
 
 
 def main() -> None:
@@ -370,26 +388,75 @@ def main() -> None:
     filename = input("File name for initial configuration: ")
     ...
     '''
-    # tmp
-    # filename = input("File name for initial configuration:")
-    filename = "texttest.txt"
+    filename = input("File name for initial configuration:")
+    # tmp for test
+    # filename = "board_examp.txt"
     # todo validate This is not a valid file. File name for initial configuration:
     board = read_board(filename)
-    display_borad(board)
+    print(conf2unicode(board))
     side = True
-    if side:
-        input_for_moving = input("Next move of White:")
-    else:
-        input_for_moving = input("Next move of Black:")
+    game_continue = True
+    print("The initial configuration is:", end="")
+    while game_continue:
+        if is_checkmate(side, board):
+            if side:
+                print("Game over. Black wins.")
+                game_continue = False
+                continue
+            else:
+                print("Game over. White wins.")
+                game_continue = False
+                continue
 
-    if input_for_moving == "QUIT":
-        save_filename = input("File name to store the configuration:")
-        save_board(save_filename, board)
-        print("The game configuration saved.")
+        if is_stalemate(side, board):
+            print("Game over. Stalemate.")
+            game_continue = False
+            continue
 
+        if side:
+            input_for_moving = input("Next move of White:")
+        else:
+            found = find_black_move(board)
+            board = found[0].move_to(found[1], found[2], board)
+            print("Next move of Black is " + index2location(found[0].pos_x, found[0].pos_y) + index2location(found[1],
+                                                                                                             found[2])
+                  + ". The configuration after Black's move is:")
+            print(conf2unicode(board))
+            side = not side
+            continue
 
+        if input_for_moving == "QUIT":
+            save_filename = input("File name to store the configuration:")
+            save_board(save_filename, board)
+            print("The game configuration saved.")
+            game_continue = False
+            continue
 
+        if input_for_moving[2].isdecimal():
+            prev = input_for_moving[:3]
+            after = input_for_moving[3:]
+        else:
+            prev = input_for_moving[:2]
+            after = input_for_moving[2:]
 
+        # exception
+        prev2index = location2index(prev)
+        if not is_piece_at(prev2index[0], prev2index[1], board):
+            print("is_piece_at")
+            print("This is not a valid move.", end="")
+            continue
+        prev_piece = piece_at(prev2index[0], prev2index[1], board)
+        if not prev_piece.side == side:
+            print("piece_at")
+            print("This is not a valid move.", end="")
+            continue
+        after2index = location2index(after)
+        if not prev_piece.can_move_to(after2index[0], after2index[1], board):
+            print("can_move_to")
+            print("This is not a valid move.", end="")
+            continue
+        board = prev_piece.move_to(after2index[0], after2index[1], board)
+        side = not side
 
 
 if __name__ == '__main__':  # keep this in
