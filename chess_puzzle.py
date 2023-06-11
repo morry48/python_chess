@@ -523,17 +523,14 @@ def main() -> None:
         # exception
         prev2index = location2index(prev)
         if not is_piece_at(prev2index[0], prev2index[1], board):
-            print("is_piece_at")
             print("This is not a valid move.", end="")
             continue
         prev_piece = piece_at(prev2index[0], prev2index[1], board)
         if not prev_piece.side == side:
-            print("piece_at")
             print("This is not a valid move.", end="")
             continue
         after2index = location2index(after)
         if not prev_piece.can_move_to(after2index[0], after2index[1], board):
-            print("can_move_to")
             print("This is not a valid move.", end="")
             continue
         board = prev_piece.move_to(after2index[0], after2index[1], board)
