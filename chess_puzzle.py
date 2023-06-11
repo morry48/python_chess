@@ -1,10 +1,21 @@
 import random
 
+import const
+
 
 def location2index(loc: str) -> tuple[int, int]:
     '''converts chess location to corresponding x and y coordinates'''
     chars = list('abcdefghijklmnopqrstuvwxyz')
-    return chars.index(loc[0]) + 1, int(loc[1:].strip(","))
+    if not loc[0] in 'abcdefghijklmnopqrstuvwxyz':
+        raise IOError
+
+    try:
+        y = int(loc[1:].strip(","))
+    except:
+        raise IOError
+    if y < const.MIN_BOARD_SIZE or y > const.LIMIT_BOARD_SIZE:
+        raise IOError
+    return chars.index(loc[0]) + 1, y
 
 
 def isTwoCharacters(loc: str) -> bool:
@@ -284,25 +295,87 @@ def read_board(filename: str) -> Board:
     '''
     with open(filename, 'r') as file:
         lines = file.readlines()
-    board_size = int(lines[0].strip())
+
+    plain_format_lines = construct_format_lines(lines)
+    if len(plain_format_lines) != const.TEXT_LINE_BUILD_BOARD:
+        raise IOError
+    board_size = set_board_size(plain_format_lines[const.TEXT_SIZE_LINE_INDEX])
+
     board = (board_size, [])
-    for index, line in enumerate(lines[1:]):
-        if index == 0:
-            side = True
-        else:
-            side = False
-        positions = line.strip().split(', ')
-        for piece in positions:
-            if not piece:
-                continue
-            piece_type = piece[0]
-            str_location = piece[1:]
-            location_tuple = location2index(str_location)
-            if piece_type == "B":
-                board[1].append(Bishop(location_tuple[0], location_tuple[1], side))
-            else:
-                board[1].append(King(location_tuple[0], location_tuple[1], side))
+
+    build_board_one_side(
+        board,
+        plain_format_lines[const.BOARD_WHITE_SIDE_LINE_INDEX],
+        const.WHITE_SIDE
+    )
+
+    build_board_one_side(
+        board,
+        plain_format_lines[const.BOARD_BLACK_SIDE_LINE_INDEX],
+        const.BLACK_SIDE
+    )
+
     return board
+
+
+def construct_format_lines(lines):
+    format_lines = []
+    for index, line in enumerate(lines):
+        line = line.strip()
+        if not line:
+            if index < const.TEXT_LINE_BUILD_BOARD:
+                raise IOError
+            else:
+                continue
+        elements = [elem for elem in line.split(", ") if elem.strip()]
+        format_lines.append(elements)
+    return format_lines
+
+
+def set_board_size(board_size_line: list) -> int:
+    if len(board_size_line) != 1:
+        raise IOError
+    try:
+        board_size = int(board_size_line[0].strip())
+    except:
+        raise IOError
+    if board_size < const.MIN_BOARD_SIZE or board_size > const.LIMIT_BOARD_SIZE:
+        raise IOError
+    return board_size
+
+
+def build_board_one_side(board: Board, plain_format_line: list, side) -> None:
+    for piece in plain_format_line:
+        if not piece:
+            continue
+        piece_type = piece[0]
+        str_location = piece[1:]
+        location_tuple = location2index(str_location)
+        if not is_piece_in_board(board[0], location_tuple):
+            raise IOError
+
+        add_to_board_build_peice(board, location_tuple[0], location_tuple[1], side, piece_type)
+
+
+def is_bishop(piece_type: str) -> bool:
+    return piece_type == "B"
+
+
+def is_king(piece_type: str) -> bool:
+    return piece_type == "K"
+
+
+def is_piece_in_board(board_size: int, location_tuple: tuple) -> bool:
+    return location_tuple[0] <= board_size and location_tuple[1] <= board_size
+
+
+def add_to_board_build_peice(board: Board, pos_x: int, pos_y: int, side: bool, piece_type: str) -> None:
+    if is_bishop(piece_type):
+        board[1].append(Bishop(pos_x, pos_y, side))
+    elif is_king(piece_type):
+        board[1].append(King(pos_x, pos_y, side))
+    else:
+        raise IOError
 
 
 def save_board(filename: str, B: Board) -> None:
@@ -392,7 +465,14 @@ def main() -> None:
     # tmp for test
     # filename = "board_examp.txt"
     # todo validate This is not a valid file. File name for initial configuration:
-    board = read_board(filename)
+    board = False
+    while not board:
+        try:
+            board = read_board(filename)
+            break
+        except IOError:
+            filename = input("This is not a valid file. File name for initial configuration: ")
+
     print(conf2unicode(board))
     side = True
     game_continue = True
@@ -418,8 +498,9 @@ def main() -> None:
         else:
             found = find_black_move(board)
             board = found[0].move_to(found[1], found[2], board)
-            print("Next move of Black is " + index2location(found[0].pos_x, found[0].pos_y) + index2location(found[1],
-                                                                                                             found[2])
+            print("Next move of Black is "
+                  + index2location(found[0].pos_x, found[0].pos_y)
+                  + index2location(found[1], found[2])
                   + ". The configuration after Black's move is:")
             print(conf2unicode(board))
             side = not side
