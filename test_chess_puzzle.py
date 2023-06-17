@@ -173,6 +173,19 @@ def test_get_direction():
     assert bb1.get_direction(1, 1) == (-1, -1)
 
 
+def test_get_direction_false():
+    assert bb1.get_direction(1, 3) == False
+
+
+def test_is_out_board():
+    assert is_out_board(1, 1, B1) == False
+    assert is_out_board(5, 5, B1) == False
+    assert is_out_board(6, 1, B1) == True
+    assert is_out_board(1, 0, B1) == True
+    assert is_out_board(1, 6, B1) == True
+    assert is_out_board(0, 1, B1) == True
+
+
 def test_can_reach_king_vertical():
     assert wk1.can_reach(3, 4, B1) == True
     assert wk1.can_reach(4, 5, B1) == True

@@ -65,6 +65,10 @@ def piece_at(pos_X: int, pos_Y: int, B: Board) -> Piece:
     raise Exception
 
 
+def is_out_board(x: int, y: int, B: Board):
+    return x > B[0] or y > B[0] or x < 1 or y < 1
+
+
 class Bishop(Piece):
     def __init__(self, pos_X: int, pos_Y: int, side_: bool):
         '''sets initial values by calling the constructor of Piece'''
@@ -91,7 +95,7 @@ class Bishop(Piece):
         for step in range(1, abs(self.pos_y - pos_Y) + 1):
             move_x = self.pos_x + (step * direction[0])
             move_y = self.pos_y + (step * direction[1])
-            if move_x > B[0] or move_y > B[0]:
+            if is_out_board(move_x, move_y, B):
                 break
             if is_piece_at(move_x, move_y, B):
                 encountering_piece = piece_at(move_x, move_y, B)
