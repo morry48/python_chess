@@ -134,7 +134,7 @@ def test_can_reach_for_firstly_same():
     assert wb2.can_reach(4, 4, B1) == False
 
 
-def test_can_reach_for_over_range_for_borad():
+def test_can_reach_for_over_range_for_board():
     assert wb2.can_reach(6, 6, B1) == False
     assert wb1.can_reach(1, 6, B1) == False
 
