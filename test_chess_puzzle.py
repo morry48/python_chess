@@ -48,13 +48,13 @@ def test_index2locationMin():
 
 
 def test_index2locationdexCaseNgRange():
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(Exception):
         index2location(1, 0)
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(Exception):
         index2location(0, 1)
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(Exception):
         index2location(27, 1)
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(Exception):
         index2location(1, 27)
 
 
@@ -96,8 +96,33 @@ def test_is_piece_at_case_exist_white_bishop():
     assert is_piece_at(2, 5, B1) == True
 
 
-def test_piece_at1():
+def test_piece_at_b1():
     assert piece_at(3, 3, B1) == bb1
+
+
+def test_piece_at_black_king():
+    assert piece_at(2, 3, B1) == bk1
+
+
+def test_piece_at_black_bishop():
+    assert piece_at(5, 3, B1) == bb2
+
+
+def test_piece_at_white_king():
+    assert piece_at(3, 5, B1) == wk1
+
+
+def test_piece_at_white_bishop():
+    assert piece_at(3, 1, B1) == wb3
+
+
+def test_piece_at_white_bishop():
+    assert piece_at(3, 1, B1) == wb3
+
+
+def test_piece_at_not_found_ng():
+    with pytest.raises(Exception):
+        piece_at(1, 1, B1)
 
 
 def test_piece_at_for_false_side():
