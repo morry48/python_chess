@@ -80,18 +80,20 @@ def test_is_piece_at1():
     assert is_piece_at(2, 2, B1) == False
 
 
-def test_is_piece_at_case_true():
-    assert is_piece_at(2, 5, B1) == True
+def test_is_piece_at_case_exist_black_king():
+    assert is_piece_at(2, 3, B1) == True
 
-    # todo case for is_piece_at
-    # black
-    # white
-    # King
-    #
-    # out of range
-    # than 27
-    # less 0
-    # assert is_piece_at(2, 5, B1) == True
+
+def test_is_piece_at_case_exist_black_bishop():
+    assert is_piece_at(5, 3, B1) == True
+
+
+def test_is_piece_at_case_exist_white_king():
+    assert is_piece_at(3, 5, B1) == True
+
+
+def test_is_piece_at_case_exist_white_bishop():
+    assert is_piece_at(2, 5, B1) == True
 
 
 def test_piece_at1():
