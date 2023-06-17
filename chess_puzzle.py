@@ -21,7 +21,7 @@ def location2index(loc: str) -> tuple[int, int]:
 def index2location(x: int, y: int) -> str:
     '''converts  pair of coordinates to corresponding location'''
     if 1 > x or x > 26 or 1 > y or y > 26:
-        raise FileNotFoundError
+        raise Exception
     chars = list('abcdefghijklmnopqrstuvwxyz')
     try:
         alf = chars[x - 1]
@@ -59,10 +59,10 @@ def piece_at(pos_X: int, pos_Y: int, B: Board) -> Piece:
     returns the piece at coordinates pox_X, pos_Y of board B
     assumes some piece at coordinates pox_X, pos_Y of board B is present
     '''
-    # todo in case of not found
     for piece in B[1]:
         if piece.pos_x == pos_X and piece.pos_y == pos_Y:
             return piece
+    raise Exception
 
 
 class Bishop(Piece):
