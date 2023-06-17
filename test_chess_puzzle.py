@@ -211,9 +211,6 @@ def test_can_reach_for_wb_beside_opponent_k():
     B_case_of_wb_besides_opponent_k = (5, [wb1, bb1, wb2, bb2, wb3, wk1, bk1, wb_besides_opponent_k])
     assert bk1.can_reach(2, 2, B_case_of_wb_besides_opponent_k) == True
 
-    # todo case for can_reach
-    # less than 1
-
 
 def test_can_move_to1():
     assert wb2.can_move_to(5, 5, B1) == False
@@ -232,12 +229,10 @@ def test_can_move_to_for_king_ok():
 def test_can_move_to_for_king_ng():
     assert wk1.can_move_to(3, 4, B1) == False
 
-    # ng to ok
     bk_moved = King(2, 2, False)
     B_wk_moved_for_ok = (5, [wb1, bb1, wb2, bb2, wb3, wk1, bk_moved])
     assert wk1.can_move_to(3, 4, B_wk_moved_for_ok) == True
 
-    # todo case for get opponent
 
 
 def test_move_to1():
