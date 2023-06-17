@@ -140,43 +140,43 @@ def test_can_reach1():
     assert wb2.can_reach(5, 5, B1) == True
 
 
-def test_can_reach_for_diagonal_ok_but_the_same_side():
+def test_can_reach_bishop_for_diagonal_ok_but_the_same_side():
     assert wb2.can_reach(3, 5, B1) == False
 
 
-def test_can_reach_for_diagonal_ok_and_the_opponent_side():
+def test_can_reach_bishop_for_diagonal_ok_and_the_opponent_side():
     assert wb2.can_reach(5, 3, B1) == True
     assert bb1.can_reach(4, 4, B1) == True
 
 
-def test_can_reach_for_not_diagonal_ng():
+def test_can_reach_bishop_can_reach_for_not_diagonal_ng():
     assert wb1.can_reach(1, 3, B1) == False
 
 
-def test_can_reach_for_the_opponent_side_but_there_are_opponent_piece_between_them():
+def test_can_reach_bishop_can_reach_for_the_opponent_side_but_there_are_opponent_piece_between_them():
     assert bb1.can_reach(5, 5, B1) == False
 
 
-def test_can_reach_for_firstly_same():
+def test_can_reach_bishop_for_firstly_same():
     assert wb2.can_reach(4, 4, B1) == False
 
 
-def test_can_reach_for_over_range_for_board():
+def test_can_reach_bishop_for_over_range_for_board():
     assert wb2.can_reach(6, 6, B1) == False
     assert wb1.can_reach(1, 6, B1) == False
 
 
-def test_can_reach_for_king_vertical():
+def test_can_reach_king_vertical():
     assert wk1.can_reach(3, 4, B1) == True
     assert wk1.can_reach(4, 5, B1) == True
     assert wk1.can_reach(4, 6, B1) == True
 
 
-def test_can_reach_for_more_than_two():
+def test_can_reach_king_for_more_than_two():
     assert wk1.can_reach(3, 7, B1) == False
 
 
-def test_can_reach_for_the_same_side():
+def test_can_reach_king_for_the_same_side():
     assert wk1.can_reach(4, 4, B1) == False
 
 
