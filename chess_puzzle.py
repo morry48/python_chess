@@ -85,7 +85,7 @@ class Bishop(Piece):
         if pos_X > B[0] or pos_Y > B[0]:
             return False
 
-        if abs(self.pos_x - pos_X) != abs(self.pos_y - pos_Y):
+        if not self.is_diagonal(pos_X, pos_Y, B):
             return False
 
         direction = self.get_direction(pos_X, pos_Y)
@@ -104,6 +104,9 @@ class Bishop(Piece):
                         return True
                 return False
         return True
+
+    def is_diagonal(self, x: int, y: int, B: Board):
+        return abs(self.pos_x - x) == abs(self.pos_y - y)
 
     def get_direction(self, pos_X: int, pos_Y: int):
         if self.pos_x < pos_X and self.pos_y < pos_Y:

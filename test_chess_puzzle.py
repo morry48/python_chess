@@ -165,6 +165,12 @@ def test_can_reach_bishop_for_over_range_for_board():
     assert wb2.can_reach(6, 6, B1) == False
     assert wb1.can_reach(1, 6, B1) == False
 
+def test_is_diagonal():
+    assert bb1.is_diagonal(5, 5, B1) == True
+    assert bb1.is_diagonal(1, 5, B1) == True
+    assert bb1.is_diagonal(5, 1, B1) == True
+    assert bb1.is_diagonal(1, 1, B1) == True
+    assert bb1.is_diagonal(1, 2, B1) == False
 
 def test_get_direction():
     assert bb1.get_direction(5, 5) == (1, 1)
