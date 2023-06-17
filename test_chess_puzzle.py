@@ -165,12 +165,14 @@ def test_can_reach_bishop_for_over_range_for_board():
     assert wb2.can_reach(6, 6, B1) == False
     assert wb1.can_reach(1, 6, B1) == False
 
+
 def test_is_diagonal():
     assert bb1.is_diagonal(5, 5, B1) == True
     assert bb1.is_diagonal(1, 5, B1) == True
     assert bb1.is_diagonal(5, 1, B1) == True
     assert bb1.is_diagonal(1, 1, B1) == True
     assert bb1.is_diagonal(1, 2, B1) == False
+
 
 def test_get_direction():
     assert bb1.get_direction(5, 5) == (1, 1)
@@ -222,6 +224,12 @@ def test_can_move_to_for_bishop_ok():
     assert wb2.can_move_to(5, 5, B_moved_wk_for_ok) == True
 
 
+def test_can_move_to_for_bishop_ng():
+    wk_moved = King(4, 1, True)
+    B_moved_wk_for_ok = (5, [wb1, bb1, wb2, bb2, wb3, wk_moved, bk1])
+    assert wb2.can_move_to(3, 4, B_moved_wk_for_ok) == False
+
+
 def test_can_move_to_for_king_ok():
     assert wk1.can_move_to(4, 5, B1) == True
 
@@ -234,11 +242,37 @@ def test_can_move_to_for_king_ng():
     assert wk1.can_move_to(3, 4, B_wk_moved_for_ok) == True
 
 
-
 def test_move_to1():
     wb2a = Bishop(3, 3, True)
     Actual_B = wb2.move_to(3, 3, B1)
     Expected_B = (5, [wb2a, wb1, wk1, bk1, bb2, wb3])
+
+    # check if actual board has same contents as expected
+    assert Actual_B[0] == 5
+
+    for piece1 in Actual_B[
+        1]:  # we check if every piece in Actual_B is also present in Expected_B; if not, the test will fail
+        found = False
+        for piece in Expected_B[1]:
+            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(
+                    piece) == type(piece1):
+                found = True
+        assert found
+
+    for piece in Expected_B[
+        1]:  # we check if every piece in Expected_B is also present in Actual_B; if not, the test will fail
+        found = False
+        for piece1 in Actual_B[1]:
+            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(
+                    piece) == type(piece1):
+                found = True
+        assert found
+
+
+def test_move_to_for_bishop_not_beat_opponent():
+    wb2a2 = Bishop(5, 5, True)
+    Actual_B = wb2.move_to(5, 5, B1)
+    Expected_B = (5, [wb2a2, wb1, bb1, wk1, bk1, bb2, wb3])
 
     # check if actual board has same contents as expected
     assert Actual_B[0] == 5
@@ -289,8 +323,37 @@ def test_move_to_for_king():
                 found = True
         assert found
 
-    # todo case for move_to
-    # king get opponent
+
+def test_move_to_for_king_beat_opponent():
+    bk1_after = King(2, 3, False)
+    wb_getted = Bishop(2, 3, True)
+    B_Before = (5, [wb1, bb1, wb2, bb2, wb3, wk1, bk1, wb_getted])
+
+    Actual_B = bk1.move_to(2, 3, B_Before)
+    # not exist wb_getted
+    Expected_B = (5, [wb1, bb1, wb2, bb2, wb3, wk1, bk1_after])
+
+    # check if actual board has same contents as expected
+    assert Actual_B[0] == 5
+
+    for piece1 in Actual_B[
+        1]:  # we check if every piece in Actual_B is also present in Expected_B; if not, the test will fail
+        found = False
+        for piece in Expected_B[1]:
+            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(
+                    piece) == type(piece1):
+                found = True
+
+        assert found
+
+    for piece in Expected_B[
+        1]:  # we check if every piece in Expected_B is also present in Actual_B; if not, the test will fail
+        found = False
+        for piece1 in Actual_B[1]:
+            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(
+                    piece) == type(piece1):
+                found = True
+        assert found
 
 
 def test_is_check1():
@@ -385,10 +448,38 @@ def test_save_board():
         assert found
 
 
-def test_read_board_for_B2():
-    B2 = (5, [wb1, wk1, bk1, bb1, bb2, wb3])
+def test_read_board_for_big():
+    bb_big = Bishop(26, 26, False)
+    B2 = (26, [wb1, wk1, bk1, bb1, bb2, wb3, bb_big])
 
     B = read_board("board_examp_b2.txt")
+    assert B[0] == 26
+
+    for piece in B[1]:
+        found = False
+        for piece1 in B2[1]:
+            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(
+                    piece) == type(piece1):
+                found = True
+        assert found
+
+    for piece1 in B2[1]:
+        found = False
+        for piece in B[1]:
+            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(
+                    piece) == type(piece1):
+                found = True
+        assert found
+
+
+def test_read_board_for_check_situation():
+    wk = King(1, 1, True)
+    bb_1 = Bishop(3, 3, False)
+    bk = King(1, 5, False)
+    bb_2 = Bishop(3, 2, False)
+    B2 = (5, [wk, bb_1, bk, bb_2])
+
+    B = read_board("check_situation.txt")
     assert B[0] == 5
 
     for piece in B[1]:
