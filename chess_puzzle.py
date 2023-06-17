@@ -81,35 +81,16 @@ class Bishop(Piece):
         if pos_X > B[0] or pos_Y > B[0]:
             return False
 
-        #  todo made func (is it exists on the diagonal)
         if abs(self.pos_x - pos_X) != abs(self.pos_y - pos_Y):
             return False
 
-        flg = True
-        move_x = self.pos_x
-        move_y = self.pos_y
-        while flg:
-            if move_x > B[0] or move_y > B[0]:
-                break
+        direction = self.get_direction(pos_X, pos_Y)
 
-            if self.pos_x < pos_X and self.pos_y < pos_Y:
-                move_x += 1
-                move_y += 1
-
-            elif self.pos_x > pos_X and self.pos_y < pos_Y:
-                move_x -= 1
-                move_y += 1
-
-            elif self.pos_x < pos_X and self.pos_y > pos_Y:
-                move_x += 1
-                move_y -= 1
-            elif self.pos_x > pos_X and self.pos_y > pos_Y:
-                move_x -= 1
-                move_y -= 1
-            else:
-                return False
-            if move_x < 1 or move_y < 1:
-                break
+        if not direction:
+            return False
+        for step in range(1, abs(self.pos_y - pos_Y) + 1):
+            move_x = self.pos_x + (step * direction[0])
+            move_y = self.pos_y + (step * direction[1])
             if move_x > B[0] or move_y > B[0]:
                 break
             if is_piece_at(move_x, move_y, B):
@@ -119,6 +100,23 @@ class Bishop(Piece):
                         return True
                 return False
         return True
+
+    def get_direction(self, pos_X: int, pos_Y: int):
+        if self.pos_x < pos_X and self.pos_y < pos_Y:
+            x = 1
+            y = 1
+        elif self.pos_x > pos_X and self.pos_y < pos_Y:
+            x = -1
+            y = 1
+        elif self.pos_x < pos_X and self.pos_y > pos_Y:
+            x = 1
+            y = -1
+        elif self.pos_x > pos_X and self.pos_y > pos_Y:
+            x = -1
+            y = -1
+        else:
+            return False
+        return x, y
 
     def can_move_to(self, pos_X: int, pos_Y: int, B: Board) -> bool:
         '''

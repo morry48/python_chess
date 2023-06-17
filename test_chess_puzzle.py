@@ -140,7 +140,7 @@ def test_can_reach1():
     assert wb2.can_reach(5, 5, B1) == True
 
 
-def test_can_reach_bishop_for_diagonal_ok_but_the_same_side():
+def test_can_reach_bishoptest_can_reach_bishop_for_diagonal_ok_but_the_same_side_for_diagonal_ok_but_the_same_side():
     assert wb2.can_reach(3, 5, B1) == False
 
 
@@ -164,6 +164,13 @@ def test_can_reach_bishop_for_firstly_same():
 def test_can_reach_bishop_for_over_range_for_board():
     assert wb2.can_reach(6, 6, B1) == False
     assert wb1.can_reach(1, 6, B1) == False
+
+
+def test_get_direction():
+    assert bb1.get_direction(5, 5) == (1, 1)
+    assert bb1.get_direction(1, 5) == (-1, 1)
+    assert bb1.get_direction(5, 1) == (1, -1)
+    assert bb1.get_direction(1, 1) == (-1, -1)
 
 
 def test_can_reach_king_vertical():
