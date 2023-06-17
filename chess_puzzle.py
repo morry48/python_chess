@@ -18,10 +18,6 @@ def location2index(loc: str) -> tuple[int, int]:
     return chars.index(loc[0]) + 1, y
 
 
-def isTwoCharacters(loc: str) -> bool:
-    return len(str) == 2
-
-
 def index2location(x: int, y: int) -> str:
     '''converts  pair of coordinates to corresponding location'''
     if 1 > x or x > 26 or 1 > y or y > 26:
