@@ -46,9 +46,16 @@ def test_index2locationMax():
 def test_index2locationMin():
     assert index2location(1, 1) == "a1"
 
-    # todo case for index2location
-    # 0
-    # 27
+
+def test_index2locationdexCaseNgRange():
+    with pytest.raises(FileNotFoundError):
+        index2location(1, 0)
+    with pytest.raises(FileNotFoundError):
+        index2location(0, 1)
+    with pytest.raises(FileNotFoundError):
+        index2location(27, 1)
+    with pytest.raises(FileNotFoundError):
+        index2location(1, 27)
 
 
 wb1 = Bishop(2, 5, True)
