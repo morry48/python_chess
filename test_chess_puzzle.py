@@ -102,6 +102,10 @@ def test_can_reach_for_diagonal_ok_and_the_opponent_side():
     assert bb1.can_reach(4, 4, B1) == True
 
 
+def test_can_reach_for_not_diagonal_ng():
+    assert wb1.can_reach(1, 3, B1) == False
+
+
 def test_can_reach_for_the_opponent_side_but_there_are_opponent_piece_between_them():
     assert bb1.can_reach(5, 5, B1) == False
 
