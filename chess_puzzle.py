@@ -24,9 +24,15 @@ def isTwoCharacters(loc: str) -> bool:
 
 def index2location(x: int, y: int) -> str:
     '''converts  pair of coordinates to corresponding location'''
+    if 1 > x or x > 26 or 1 > y or y > 26:
+        raise FileNotFoundError
     chars = list('abcdefghijklmnopqrstuvwxyz')
-    alf = chars[x - 1]
-    return alf + str(y)
+    try:
+        alf = chars[x - 1]
+        str_y = str(y)
+    except:
+        raise IOError
+    return alf + str_y
 
 
 class Piece:
