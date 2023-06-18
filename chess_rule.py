@@ -11,15 +11,15 @@ def location2index(loc: str) -> tuple[int, int]:
     """converts chess location to corresponding x and y coordinates"""
     chars = list('abcdefghijklmnopqrstuvwxyz')
     if not loc[0] in 'abcdefghijklmnopqrstuvwxyz':
-        raise IOError
+        return ()
 
     try:
         y = int(loc[1:].strip(","))
     except:
-        raise IOError
+        return ()
 
     if y < const.MIN_BOARD_SIZE or y > const.LIMIT_BOARD_SIZE:
-        raise IOError
+        return ()
     return chars.index(loc[0]) + 1, y
 
 
@@ -107,6 +107,9 @@ def is_stalemate(side: bool, B: Board) -> bool:
     - use is_check
     - use can_move_to
     """
+    print(conf2unicode(B))
+    print("dkfj");
+    print(conf2unicode(B))
     if is_check(side, B):
         return False
     for piece in B[1]:

@@ -65,8 +65,10 @@ def main() -> None:
             prev = input_for_moving[:2]
             after = input_for_moving[2:]
 
-        # exception
         prev2index = location2index(prev)
+        if not prev2index:
+            print("This is not a valid move.", end="")
+            continue
         if not is_piece_at(prev2index[0], prev2index[1], board):
             print("This is not a valid move.", end="")
             continue

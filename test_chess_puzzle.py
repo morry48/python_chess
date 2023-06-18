@@ -18,23 +18,23 @@ def test_location2indexCaseMin():
 
 def test_location2indexCaseNgFormat():
     # out of 26
-    with pytest.raises(IOError):
-        location2index("a27")
+    # with pytest.raises(IOError):
+    assert location2index("a27") == ()
     # out of 26
-    with pytest.raises(IOError):
-        location2index("a0")
+    # with pytest.raises(IOError):
+    assert location2index("a0") == ()
     # not start alfabet
-    with pytest.raises(IOError):
-        location2index("02")
+    # with pytest.raises(IOError):
+    assert location2index("02") == ()
     # including not int
-    with pytest.raises(IOError):
-        location2index("a")
+    # with pytest.raises(IOError):
+    assert location2index("a") == ()
     # including not int
-    with pytest.raises(IOError):
-        location2index("ab")
+    # with pytest.raises(IOError):
+    assert location2index("ab") == ()
     # whether is capital permitted
-    with pytest.raises(IOError):
-        location2index("A1")
+    # with pytest.raises(IOError):
+    assert location2index("A1") == ()
 
 
 def test_index2location1():
@@ -237,6 +237,12 @@ def test_can_move_to_for_king_ng():
     assert wk1.can_move_to(3, 4, B_wk_moved_for_ok) == True
 
 
+def test_can_move_to_beat_opponent_king():
+    B = read_board("to_beat_opponent_king.txt")
+    prev_piece = piece_at(5, 2, B)
+    assert prev_piece.can_move_to(4, 2, B) == True
+
+
 def test_move_to1():
     wb2a = Bishop(3, 3, True)
     Actual_B = wb2.move_to(3, 3, B1)
@@ -336,13 +342,22 @@ def test_is_checkmate_for_ng():
 def test_is_stalemate_true():
     wk = King(1, 1, True)
     bb = Bishop(1, 2, False)
-    bk = King(3, 3, False)
+    bk = King(2, 3, False)
     B_stalemate = (5, [wk, bb, bk])
     assert is_stalemate(True, B_stalemate) == True
     assert is_stalemate(False, B_stalemate) == False
 
 
-def test_is_stalemate_false():
+def test_is_stalemate_False1():
+    wk = King(1, 1, True)
+    bb = Bishop(1, 2, False)
+    bk = King(3, 3, False)
+    B_stalemate = (5, [wk, bb, bk])
+    assert is_stalemate(True, B_stalemate) == False
+    assert is_stalemate(False, B_stalemate) == False
+
+
+def test_is_stalemate_false2():
     wk = King(1, 1, True)
     bb = Bishop(1, 2, False)
     bk = King(4, 3, False)
