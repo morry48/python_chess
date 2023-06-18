@@ -1,4 +1,5 @@
 import pytest
+
 from chess_puzzle import *
 
 
@@ -116,10 +117,6 @@ def test_piece_at_white_bishop():
     assert piece_at(3, 1, B1) == wb3
 
 
-def test_piece_at_white_bishop():
-    assert piece_at(3, 1, B1) == wb3
-
-
 def test_piece_at_not_found_ng():
     with pytest.raises(Exception):
         piece_at(1, 1, B1)
@@ -167,11 +164,11 @@ def test_can_reach_bishop_for_over_range_for_board():
 
 
 def test_is_diagonal():
-    assert bb1.is_diagonal(5, 5, B1) == True
-    assert bb1.is_diagonal(1, 5, B1) == True
-    assert bb1.is_diagonal(5, 1, B1) == True
-    assert bb1.is_diagonal(1, 1, B1) == True
-    assert bb1.is_diagonal(1, 2, B1) == False
+    assert bb1.is_diagonal(5, 5) == True
+    assert bb1.is_diagonal(1, 5) == True
+    assert bb1.is_diagonal(5, 1) == True
+    assert bb1.is_diagonal(1, 1) == True
+    assert bb1.is_diagonal(1, 2) == False
 
 
 def test_get_direction():
@@ -326,8 +323,8 @@ def test_move_to_for_king():
 
 def test_move_to_for_king_beat_opponent():
     bk1_after = King(2, 3, False)
-    wb_getted = Bishop(2, 3, True)
-    B_Before = (5, [wb1, bb1, wb2, bb2, wb3, wk1, bk1, wb_getted])
+    wb_got = Bishop(2, 3, True)
+    B_Before = (5, [wb1, bb1, wb2, bb2, wb3, wk1, bk1, wb_got])
 
     Actual_B = bk1.move_to(2, 3, B_Before)
     # not exist wb_getted
