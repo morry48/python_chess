@@ -107,9 +107,6 @@ def is_stalemate(side: bool, B: Board) -> bool:
     - use is_check
     - use can_move_to
     """
-    print(conf2unicode(B))
-    print("dkfj");
-    print(conf2unicode(B))
     if is_check(side, B):
         return False
     for piece in B[1]:
