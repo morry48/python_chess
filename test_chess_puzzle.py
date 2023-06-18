@@ -18,22 +18,16 @@ def test_location2indexCaseMin():
 
 def test_location2indexCaseNgFormat():
     # out of 26
-    # with pytest.raises(IOError):
     assert location2index("a27") == ()
     # out of 26
-    # with pytest.raises(IOError):
     assert location2index("a0") == ()
     # not start alfabet
-    # with pytest.raises(IOError):
     assert location2index("02") == ()
     # including not int
-    # with pytest.raises(IOError):
     assert location2index("a") == ()
     # including not int
-    # with pytest.raises(IOError):
     assert location2index("ab") == ()
     # whether is capital permitted
-    # with pytest.raises(IOError):
     assert location2index("A1") == ()
 
 
