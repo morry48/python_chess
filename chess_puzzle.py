@@ -18,15 +18,17 @@ def location2index(loc: str) -> tuple[int, int]:
     return chars.index(loc[0]) + 1, y
 
 
-def isTwoCharacters(loc: str) -> bool:
-    return len(str) == 2
-
-
 def index2location(x: int, y: int) -> str:
     '''converts  pair of coordinates to corresponding location'''
+    if 1 > x or x > 26 or 1 > y or y > 26:
+        raise Exception
     chars = list('abcdefghijklmnopqrstuvwxyz')
-    alf = chars[x - 1]
-    return alf + str(y)
+    try:
+        alf = chars[x - 1]
+        str_y = str(y)
+    except:
+        raise IOError
+    return alf + str_y
 
 
 class Piece:
@@ -57,10 +59,14 @@ def piece_at(pos_X: int, pos_Y: int, B: Board) -> Piece:
     returns the piece at coordinates pox_X, pos_Y of board B
     assumes some piece at coordinates pox_X, pos_Y of board B is present
     '''
-    # todo in case of not found
     for piece in B[1]:
         if piece.pos_x == pos_X and piece.pos_y == pos_Y:
             return piece
+    raise Exception
+
+
+def is_out_board(x: int, y: int, B: Board):
+    return x > B[0] or y > B[0] or x < 1 or y < 1
 
 
 class Bishop(Piece):
@@ -79,36 +85,17 @@ class Bishop(Piece):
         if pos_X > B[0] or pos_Y > B[0]:
             return False
 
-        #  todo made func (is it exists on the diagonal)
-        if abs(self.pos_x - pos_X) != abs(self.pos_y - pos_Y):
+        if not self.is_diagonal(pos_X, pos_Y, B):
             return False
 
-        flg = True
-        move_x = self.pos_x
-        move_y = self.pos_y
-        while flg:
-            if move_x > B[0] or move_y > B[0]:
-                break
+        direction = self.get_direction(pos_X, pos_Y)
 
-            if self.pos_x < pos_X and self.pos_y < pos_Y:
-                move_x += 1
-                move_y += 1
-
-            elif self.pos_x > pos_X and self.pos_y < pos_Y:
-                move_x -= 1
-                move_y += 1
-
-            elif self.pos_x < pos_X and self.pos_y > pos_Y:
-                move_x += 1
-                move_y -= 1
-            elif self.pos_x > pos_X and self.pos_y > pos_Y:
-                move_x -= 1
-                move_y -= 1
-            else:
-                return False
-            if move_x < 1 or move_y < 1:
-                break
-            if move_x > B[0] or move_y > B[0]:
+        if not direction:
+            return False
+        for step in range(1, abs(self.pos_y - pos_Y) + 1):
+            move_x = self.pos_x + (step * direction[0])
+            move_y = self.pos_y + (step * direction[1])
+            if is_out_board(move_x, move_y, B):
                 break
             if is_piece_at(move_x, move_y, B):
                 encountering_piece = piece_at(move_x, move_y, B)
@@ -117,6 +104,26 @@ class Bishop(Piece):
                         return True
                 return False
         return True
+
+    def is_diagonal(self, x: int, y: int, B: Board):
+        return abs(self.pos_x - x) == abs(self.pos_y - y)
+
+    def get_direction(self, pos_X: int, pos_Y: int):
+        if self.pos_x < pos_X and self.pos_y < pos_Y:
+            x = 1
+            y = 1
+        elif self.pos_x > pos_X and self.pos_y < pos_Y:
+            x = -1
+            y = 1
+        elif self.pos_x < pos_X and self.pos_y > pos_Y:
+            x = 1
+            y = -1
+        elif self.pos_x > pos_X and self.pos_y > pos_Y:
+            x = -1
+            y = -1
+        else:
+            return False
+        return x, y
 
     def can_move_to(self, pos_X: int, pos_Y: int, B: Board) -> bool:
         '''
@@ -523,17 +530,14 @@ def main() -> None:
         # exception
         prev2index = location2index(prev)
         if not is_piece_at(prev2index[0], prev2index[1], board):
-            print("is_piece_at")
             print("This is not a valid move.", end="")
             continue
         prev_piece = piece_at(prev2index[0], prev2index[1], board)
         if not prev_piece.side == side:
-            print("piece_at")
             print("This is not a valid move.", end="")
             continue
         after2index = location2index(after)
         if not prev_piece.can_move_to(after2index[0], after2index[1], board):
-            print("can_move_to")
             print("This is not a valid move.", end="")
             continue
         board = prev_piece.move_to(after2index[0], after2index[1], board)
