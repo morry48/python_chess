@@ -10,9 +10,6 @@ def main() -> None:
     ...
     """
     filename = input("File name for initial configuration:")
-    # tmp for test
-    # filename = "board_examp.txt"
-    # todo validate This is not a valid file. File name for initial configuration:
     board = False
     while not board:
         try:

@@ -1,5 +1,6 @@
 import pytest
 
+from test_utils import *
 from chess_puzzle import *
 
 
@@ -129,9 +130,6 @@ def test_piece_at_for_false_side():
 def test_piece_at_for_true_side():
     assert piece_at(5, 3, B1) == bb2
 
-    # todo case for piece_at
-    # not found
-
 
 def test_can_reach1():
     assert wb2.can_reach(5, 5, B1) == True
@@ -247,23 +245,7 @@ def test_move_to1():
     # check if actual board has same contents as expected
     assert Actual_B[0] == 5
 
-    for piece1 in Actual_B[
-        1]:  # we check if every piece in Actual_B is also present in Expected_B; if not, the test will fail
-        found = False
-        for piece in Expected_B[1]:
-            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(
-                    piece) == type(piece1):
-                found = True
-        assert found
-
-    for piece in Expected_B[
-        1]:  # we check if every piece in Expected_B is also present in Actual_B; if not, the test will fail
-        found = False
-        for piece1 in Actual_B[1]:
-            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(
-                    piece) == type(piece1):
-                found = True
-        assert found
+    comparing_boards(Expected_B, Actual_B)
 
 
 def test_move_to_for_bishop_not_beat_opponent():
@@ -274,23 +256,7 @@ def test_move_to_for_bishop_not_beat_opponent():
     # check if actual board has same contents as expected
     assert Actual_B[0] == 5
 
-    for piece1 in Actual_B[
-        1]:  # we check if every piece in Actual_B is also present in Expected_B; if not, the test will fail
-        found = False
-        for piece in Expected_B[1]:
-            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(
-                    piece) == type(piece1):
-                found = True
-        assert found
-
-    for piece in Expected_B[
-        1]:  # we check if every piece in Expected_B is also present in Actual_B; if not, the test will fail
-        found = False
-        for piece1 in Actual_B[1]:
-            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(
-                    piece) == type(piece1):
-                found = True
-        assert found
+    comparing_boards(Expected_B, Actual_B)
 
 
 def test_move_to_for_king():
@@ -301,24 +267,7 @@ def test_move_to_for_king():
     # check if actual board has same contents as expected
     assert Actual_B[0] == 5
 
-    for piece1 in Actual_B[
-        1]:  # we check if every piece in Actual_B is also present in Expected_B; if not, the test will fail
-        found = False
-        for piece in Expected_B[1]:
-            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(
-                    piece) == type(piece1):
-                found = True
-
-        assert found
-
-    for piece in Expected_B[
-        1]:  # we check if every piece in Expected_B is also present in Actual_B; if not, the test will fail
-        found = False
-        for piece1 in Actual_B[1]:
-            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(
-                    piece) == type(piece1):
-                found = True
-        assert found
+    comparing_boards(Expected_B, Actual_B)
 
 
 def test_move_to_for_king_beat_opponent():
@@ -333,24 +282,26 @@ def test_move_to_for_king_beat_opponent():
     # check if actual board has same contents as expected
     assert Actual_B[0] == 5
 
-    for piece1 in Actual_B[
-        1]:  # we check if every piece in Actual_B is also present in Expected_B; if not, the test will fail
-        found = False
-        for piece in Expected_B[1]:
-            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(
-                    piece) == type(piece1):
-                found = True
+    comparing_boards(Expected_B, Actual_B)
 
-        assert found
 
-    for piece in Expected_B[
-        1]:  # we check if every piece in Expected_B is also present in Actual_B; if not, the test will fail
-        found = False
-        for piece1 in Actual_B[1]:
-            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(
-                    piece) == type(piece1):
-                found = True
-        assert found
+def test_build_new_board():
+    wb2a = Bishop(3, 3, True)
+    Actual_B = wb2.build_new_board(3, 3, B1)
+    Expected_B = (5, [wb2a, wb1, wk1, bk1, bb2, wb3])
+
+    # check if actual board has same contents as expected
+    assert Actual_B[0] == 5
+
+    comparing_boards(Expected_B, Actual_B)
+
+
+def test_remove_piece_from_board():
+    # wb2a = Bishop(3, 3, True)
+    new_list = wb2.remove_piece_from_board(3, 3, B1)
+    Actual_B = (5, new_list)
+    Expected_B = (5, [wb1, wk1, bk1, bb2, wb3])
+    comparing_boards(Expected_B, Actual_B)
 
 
 def test_is_check1():
@@ -388,7 +339,6 @@ def test_is_stalemate_true():
     bk = King(3, 3, False)
     B_stalemate = (5, [wk, bb, bk])
     assert is_stalemate(True, B_stalemate) == True
-
     assert is_stalemate(False, B_stalemate) == False
 
 
@@ -406,21 +356,7 @@ def test_read_board1():
     B = read_board("board_examp.txt")
     assert B[0] == 5
 
-    for piece in B[1]:  # we check if every piece in B is also present in B1; if not, the test will fail
-        found = False
-        for piece1 in B1[1]:
-            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(
-                    piece) == type(piece1):
-                found = True
-        assert found
-
-    for piece1 in B1[1]:  # we check if every piece in B1 is also present in B; if not, the test will fail
-        found = False
-        for piece in B[1]:
-            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(
-                    piece) == type(piece1):
-                found = True
-        assert found
+    comparing_boards(B, B1)
 
 
 def test_save_board():
@@ -428,21 +364,7 @@ def test_save_board():
 
     save_board(filename, B1)
     B = read_board(filename)
-    for piece in B[1]:
-        found = False
-        for piece1 in B1[1]:
-            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(
-                    piece) == type(piece1):
-                found = True
-        assert found
-
-    for piece1 in B1[1]:  # we check if every piece in B1 is also present in B; if not, the test will fail
-        found = False
-        for piece in B[1]:
-            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(
-                    piece) == type(piece1):
-                found = True
-        assert found
+    comparing_boards(B, B1)
 
 
 def test_read_board_for_big():
@@ -452,21 +374,7 @@ def test_read_board_for_big():
     B = read_board("board_examp_b2.txt")
     assert B[0] == 26
 
-    for piece in B[1]:
-        found = False
-        for piece1 in B2[1]:
-            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(
-                    piece) == type(piece1):
-                found = True
-        assert found
-
-    for piece1 in B2[1]:
-        found = False
-        for piece in B[1]:
-            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(
-                    piece) == type(piece1):
-                found = True
-        assert found
+    comparing_boards(B, B2)
 
 
 def test_read_board_for_check_situation():
@@ -479,18 +387,4 @@ def test_read_board_for_check_situation():
     B = read_board("check_situation.txt")
     assert B[0] == 5
 
-    for piece in B[1]:
-        found = False
-        for piece1 in B2[1]:
-            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(
-                    piece) == type(piece1):
-                found = True
-        assert found
-
-    for piece1 in B2[1]:
-        found = False
-        for piece in B[1]:
-            if piece.pos_x == piece1.pos_x and piece.pos_y == piece1.pos_y and piece.side == piece1.side and type(
-                    piece) == type(piece1):
-                found = True
-        assert found
+    comparing_boards(B, B2)

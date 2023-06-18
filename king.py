@@ -47,13 +47,7 @@ class King(Piece):
         return new_board
 
     def build_new_board(self, pos_X: int, pos_Y: int, B: Board):
-        new_list = []
-        for index, piece in enumerate(B[1]):
-            if piece.pos_x == self.pos_x and piece.pos_y == self.pos_y and piece.side == self.side:
-                continue
-            if piece.pos_x == pos_X and piece.pos_y == pos_Y and piece.side != self.side:
-                continue
-            new_list.append(piece)
+        new_list = self.remove_piece_from_board(pos_X, pos_Y, B)
         new_piece = King(pos_X, pos_Y, self.side)
         new_list.append(new_piece)
         return B[0], new_list
