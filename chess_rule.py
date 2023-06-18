@@ -191,7 +191,7 @@ def build_board_one_side(board: Board, plain_format_line: list, side) -> None:
         if not is_piece_in_board(board[0], location_tuple):
             raise IOError
 
-        add_to_board_build_peice(board, location_tuple[0], location_tuple[1], side, piece_type)
+        add_to_board_build_piece(board, location_tuple[0], location_tuple[1], side, piece_type)
 
 
 def is_bishop(piece_type: str) -> bool:
@@ -206,7 +206,7 @@ def is_piece_in_board(board_size: int, location_tuple: tuple) -> bool:
     return location_tuple[0] <= board_size and location_tuple[1] <= board_size
 
 
-def add_to_board_build_peice(board: Board, pos_x: int, pos_y: int, side: bool, piece_type: str) -> None:
+def add_to_board_build_piece(board: Board, pos_x: int, pos_y: int, side: bool, piece_type: str) -> None:
     if is_bishop(piece_type):
         board[1].append(Bishop(pos_x, pos_y, side))
     elif is_king(piece_type):
