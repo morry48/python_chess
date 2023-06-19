@@ -317,11 +317,22 @@ def test_is_check_by_king_visualiser():
 def test_is_checkmate1():
     B3 = (5, [wk1a, wb4, bk1, bb2, bb3, wb3, wb5])
     assert is_checkmate(False, B3) == True
+    assert is_checkmate(True, B3) == False
 
 
-def test_is_checkmate_for_ng():
+def test_is_checkmate_for_ng1():
     B3_fixed_for_false = (5, [wk1a, wb4, bk1, bb2, wb3, wb5])
     assert is_checkmate(False, B3_fixed_for_false) == False
+    assert is_checkmate(True, B3_fixed_for_false) == False
+
+
+def test_is_checkmate_for_ng2():
+    wk = King(1, 1, True)
+    bb = Bishop(1, 2, False)
+    bk = King(2, 3, False)
+    B_stalemate = (26, [wk, bb, bk])
+    assert is_checkmate(True, B_stalemate) == False
+    assert is_checkmate(False, B_stalemate) == False
 
 
 def test_is_stalemate_true():
@@ -401,6 +412,42 @@ def test_read_board_for_check_situation():
     assert B[0] == 5
 
     comparing_boards(B, B2)
+
+
+def test_read_board_ng():
+    with pytest.raises(IOError):
+        read_board("board_examp_invalid_for_few_board_size.txt")
+    with pytest.raises(IOError):
+        read_board("board_examp_invalid_for_too_large_board_size.txt")
+    with pytest.raises(IOError):
+        read_board("board_examp_invalid_form.txt")
+    with pytest.raises(IOError):
+        read_board("board_examp_less_line.txt")
+    with pytest.raises(IOError):
+        read_board("board_examp_too_many_line.txt")
+    with pytest.raises(IOError):
+        read_board("notExist.txt")
+
+
+def test_construct_format_lines():
+    with open('board_examp.txt', 'r') as file:
+        lines = file.readlines()
+    plain_format_lines = construct_format_lines(lines)
+    assert plain_format_lines == [['5'], ['Bb5', 'Kc5', 'Bd4', 'Bc1'], ['Kb3', 'Bc3', 'Be3']]
+
+
+def test_construct_format_lines_case_dot_space():
+    with open('board_examp_add_dot.txt', 'r') as file:
+        lines = file.readlines()
+    plain_format_lines = construct_format_lines(lines)
+    assert plain_format_lines == [['5'], ['Bb5', 'Kc5', 'Bd4', 'Bc1'], ['Kb3', 'Bc3', 'Be3']]
+
+
+def test_construct_format_lines_ng():
+    with open('board_examp_empty_line.txt', 'r') as file:
+        lines = file.readlines()
+    with pytest.raises(IOError):
+        construct_format_lines(lines)
 
 
 def test_set_board_size():

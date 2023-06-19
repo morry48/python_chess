@@ -158,7 +158,7 @@ def construct_format_lines(lines):
                 raise IOError
             else:
                 continue
-        elements = [elem for elem in line.split(", ") if elem.strip()]
+        elements = [elem.strip() for elem in line.split(",") if elem.strip()]
         format_lines.append(elements)
     return format_lines
 
