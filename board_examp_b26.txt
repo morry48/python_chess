@@ -1,0 +1,3 @@
+26
+Bb5, Kc5, Bc1, Bb10, Bc11, Bd11, Br11
+Kb3, Bc3, Be3, Bz26

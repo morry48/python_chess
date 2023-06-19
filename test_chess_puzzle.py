@@ -18,23 +18,17 @@ def test_location2indexCaseMin():
 
 def test_location2indexCaseNgFormat():
     # out of 26
-    with pytest.raises(IOError):
-        location2index("a27")
+    assert location2index("a27") == ()
     # out of 26
-    with pytest.raises(IOError):
-        location2index("a0")
+    assert location2index("a0") == ()
     # not start alfabet
-    with pytest.raises(IOError):
-        location2index("02")
+    assert location2index("02") == ()
     # including not int
-    with pytest.raises(IOError):
-        location2index("a")
+    assert location2index("a") == ()
     # including not int
-    with pytest.raises(IOError):
-        location2index("ab")
+    assert location2index("ab") == ()
     # whether is capital permitted
-    with pytest.raises(IOError):
-        location2index("A1")
+    assert location2index("A1") == ()
 
 
 def test_index2location1():
@@ -50,14 +44,10 @@ def test_index2locationMin():
 
 
 def test_index2locationdexCaseNgRange():
-    with pytest.raises(Exception):
-        index2location(1, 0)
-    with pytest.raises(Exception):
-        index2location(0, 1)
-    with pytest.raises(Exception):
-        index2location(27, 1)
-    with pytest.raises(Exception):
-        index2location(1, 27)
+    assert index2location(1, 0) == ""
+    assert index2location(0, 1) == ""
+    assert index2location(27, 1) == ""
+    assert index2location(1, 27) == ""
 
 
 wb1 = Bishop(2, 5, True)
@@ -116,11 +106,6 @@ def test_piece_at_white_king():
 
 def test_piece_at_white_bishop():
     assert piece_at(3, 1, B1) == wb3
-
-
-def test_piece_at_not_found_ng():
-    with pytest.raises(Exception):
-        piece_at(1, 1, B1)
 
 
 def test_piece_at_for_false_side():
@@ -237,6 +222,12 @@ def test_can_move_to_for_king_ng():
     assert wk1.can_move_to(3, 4, B_wk_moved_for_ok) == True
 
 
+def test_can_move_to_beat_opponent_king():
+    B = read_board("to_beat_opponent_king.txt")
+    prev_piece = piece_at(5, 2, B)
+    assert prev_piece.can_move_to(4, 2, B) == True
+
+
 def test_move_to1():
     wb2a = Bishop(3, 3, True)
     Actual_B = wb2.move_to(3, 3, B1)
@@ -326,23 +317,43 @@ def test_is_check_by_king_visualiser():
 def test_is_checkmate1():
     B3 = (5, [wk1a, wb4, bk1, bb2, bb3, wb3, wb5])
     assert is_checkmate(False, B3) == True
+    assert is_checkmate(True, B3) == False
 
 
-def test_is_checkmate_for_ng():
+def test_is_checkmate_for_ng1():
     B3_fixed_for_false = (5, [wk1a, wb4, bk1, bb2, wb3, wb5])
     assert is_checkmate(False, B3_fixed_for_false) == False
+    assert is_checkmate(True, B3_fixed_for_false) == False
+
+
+def test_is_checkmate_for_ng2():
+    wk = King(1, 1, True)
+    bb = Bishop(1, 2, False)
+    bk = King(2, 3, False)
+    B_stalemate = (26, [wk, bb, bk])
+    assert is_checkmate(True, B_stalemate) == False
+    assert is_checkmate(False, B_stalemate) == False
 
 
 def test_is_stalemate_true():
     wk = King(1, 1, True)
     bb = Bishop(1, 2, False)
-    bk = King(3, 3, False)
-    B_stalemate = (5, [wk, bb, bk])
+    bk = King(2, 3, False)
+    B_stalemate = (26, [wk, bb, bk])
     assert is_stalemate(True, B_stalemate) == True
     assert is_stalemate(False, B_stalemate) == False
 
 
-def test_is_stalemate_false():
+def test_is_stalemate_False1():
+    wk = King(1, 1, True)
+    bb = Bishop(1, 2, False)
+    bk = King(3, 3, False)
+    B_stalemate = (5, [wk, bb, bk])
+    assert is_stalemate(True, B_stalemate) == False
+    assert is_stalemate(False, B_stalemate) == False
+
+
+def test_is_stalemate_false2():
     wk = King(1, 1, True)
     bb = Bishop(1, 2, False)
     bk = King(4, 3, False)
@@ -352,18 +363,19 @@ def test_is_stalemate_false():
     assert is_stalemate(False, B_stalemate) == False
 
 
+def test_is_make_moving_anywhere():
+    wk = King(1, 1, True)
+    bb = Bishop(1, 2, False)
+    bk = King(2, 3, False)
+    B = (26, [wk, bb, bk])
+    assert is_make_moving_anywhere(True, B) == True
+    assert is_make_moving_anywhere(False, B) == False
+
+
 def test_read_board1():
     B = read_board("board_examp.txt")
     assert B[0] == 5
 
-    comparing_boards(B, B1)
-
-
-def test_save_board():
-    filename = "board_examp_write.txt"
-
-    save_board(filename, B1)
-    B = read_board(filename)
     comparing_boards(B, B1)
 
 
@@ -377,6 +389,18 @@ def test_read_board_for_big():
     comparing_boards(B, B2)
 
 
+def test_read_board_for_min():
+    wb = Bishop(3, 2, True)
+    wk = King(3, 3, True)
+    bk = King(1, 1, False)
+    B_actual = (3, [wb, wk, bk])
+
+    B_expected = read_board("board_examp_b_min3.txt")
+    assert B_expected[0] == 3
+
+    comparing_boards(B_expected, B_actual)
+
+
 def test_read_board_for_check_situation():
     wk = King(1, 1, True)
     bb_1 = Bishop(3, 3, False)
@@ -388,3 +412,117 @@ def test_read_board_for_check_situation():
     assert B[0] == 5
 
     comparing_boards(B, B2)
+
+
+def test_read_board_ng():
+    with pytest.raises(IOError):
+        read_board("board_examp_invalid_for_few_board_size.txt")
+    with pytest.raises(IOError):
+        read_board("board_examp_invalid_for_too_large_board_size.txt")
+    with pytest.raises(IOError):
+        read_board("board_examp_invalid_form.txt")
+    with pytest.raises(IOError):
+        read_board("board_examp_less_line.txt")
+    with pytest.raises(IOError):
+        read_board("board_examp_too_many_line.txt")
+    with pytest.raises(IOError):
+        read_board("notExist.txt")
+
+
+def test_construct_format_lines():
+    with open('board_examp.txt', 'r') as file:
+        lines = file.readlines()
+    plain_format_lines = construct_format_lines(lines)
+    assert plain_format_lines == [['5'], ['Bb5', 'Kc5', 'Bd4', 'Bc1'], ['Kb3', 'Bc3', 'Be3']]
+
+
+def test_construct_format_lines_case_dot_space():
+    with open('board_examp_add_dot.txt', 'r') as file:
+        lines = file.readlines()
+    plain_format_lines = construct_format_lines(lines)
+    assert plain_format_lines == [['5'], ['Bb5', 'Kc5', 'Bd4', 'Bc1'], ['Kb3', 'Bc3', 'Be3']]
+
+
+def test_construct_format_lines_ng():
+    with open('board_examp_empty_line.txt', 'r') as file:
+        lines = file.readlines()
+    with pytest.raises(IOError):
+        construct_format_lines(lines)
+
+
+def test_set_board_size():
+    board_size_line = ["9"]
+    assert set_board_size(board_size_line) == 9
+    board_size_line = ["3"]
+    assert set_board_size(board_size_line) == 3
+    board_size_line = ["26"]
+    assert set_board_size(board_size_line) == 26
+
+
+def test_set_board_size_ng():
+    board_size_line = ["2"]
+    with pytest.raises(IOError):
+        set_board_size(board_size_line)
+    board_size_line = ["27"]
+    with pytest.raises(IOError):
+        set_board_size(board_size_line)
+    board_size_line = []
+    with pytest.raises(IOError):
+        set_board_size(board_size_line)
+    board_size_line = ["26", "4"]
+    with pytest.raises(IOError):
+        set_board_size(board_size_line)
+
+
+def test_build_board_one_side_non_error_build():
+    plain_format_lines = [['5'], ['Bb5', 'Kc5', 'Bd4', 'Bc1'], ['Kb3', 'Bc3', 'Be3']]
+
+    board_size = set_board_size(plain_format_lines[const.TEXT_SIZE_LINE_INDEX])
+    board = (board_size, [])
+
+    build_board_one_side(
+        board,
+        plain_format_lines[const.BOARD_WHITE_SIDE_LINE_INDEX],
+        const.WHITE_SIDE
+    )
+
+    build_board_one_side(
+        board,
+        plain_format_lines[const.BOARD_BLACK_SIDE_LINE_INDEX],
+        const.BLACK_SIDE
+    )
+
+
+def test_is_bishop():
+    assert is_bishop("B") == True
+    assert is_bishop("K") == False
+
+
+def test_is_king():
+    assert is_king("B") == False
+    assert is_king("K") == True
+
+
+def test_is_piece_in_board():
+    assert is_piece_in_board(26, (5, 6)) == True
+    assert is_piece_in_board(5, (5, 6)) == False
+    assert is_piece_in_board(5, (6, 5)) == False
+
+
+def test_save_board():
+    filename = "board_examp_write.txt"
+
+    save_board(filename, B1)
+    B = read_board(filename)
+    comparing_boards(B, B1)
+
+
+def test_conf2unicode():
+    # 5 case
+    # test for white king, white bishop, black king, black bishop, space of matching width
+    assert conf2unicode(
+        B1) == " ♗♔  \n" \
+               "   ♗ \n" \
+               " ♚♝ ♝\n" \
+               "     \n" \
+               "  ♗  \n"

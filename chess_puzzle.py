@@ -40,6 +40,9 @@ def main() -> None:
 
         if side:
             input_for_moving = input("Next move of White:")
+            if len(input_for_moving) < 4:
+                print("This is not a valid move.", end="")
+                continue
         else:
             found = find_black_move(board)
             board = found[0].move_to(found[1], found[2], board)
@@ -65,8 +68,10 @@ def main() -> None:
             prev = input_for_moving[:2]
             after = input_for_moving[2:]
 
-        # exception
         prev2index = location2index(prev)
+        if not prev2index:
+            print("This is not a valid move.", end="")
+            continue
         if not is_piece_at(prev2index[0], prev2index[1], board):
             print("This is not a valid move.", end="")
             continue

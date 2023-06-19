@@ -11,28 +11,28 @@ def location2index(loc: str) -> tuple[int, int]:
     """converts chess location to corresponding x and y coordinates"""
     chars = list('abcdefghijklmnopqrstuvwxyz')
     if not loc[0] in 'abcdefghijklmnopqrstuvwxyz':
-        raise IOError
+        return ()
 
     try:
         y = int(loc[1:].strip(","))
     except:
-        raise IOError
+        return ()
 
-    if y < const.MIN_BOARD_SIZE or y > const.LIMIT_BOARD_SIZE:
-        raise IOError
+    if y < const.MIN_CELL_NUMBER or y > const.LIMIT_BOARD_SIZE:
+        return ()
     return chars.index(loc[0]) + 1, y
 
 
 def index2location(x: int, y: int) -> str:
     """converts  pair of coordinates to corresponding location"""
     if 1 > x or x > 26 or 1 > y or y > 26:
-        raise Exception
+        return ""
     chars = list('abcdefghijklmnopqrstuvwxyz')
     try:
         alf = chars[x - 1]
         str_y = str(y)
     except:
-        raise IOError
+        return ""
     return alf + str_y
 
 
@@ -52,7 +52,6 @@ def piece_at(pos_X: int, pos_Y: int, B: Board) -> Piece:
     for piece in B[1]:
         if piece.pos_x == pos_X and piece.pos_y == pos_Y:
             return piece
-    raise Exception
 
 
 def is_out_board(x: int, y: int, B: Board):
@@ -86,16 +85,8 @@ def is_checkmate(side: bool, B: Board) -> bool:
     """
     if not is_check(side, B):
         return False
-    for piece in B[1]:
-        if piece.side == side:
-            for i in range(1, B[0] + 1):
-                for j in range(1, B[0] + 1):
-                    if not piece.can_reach(i, j, B):
-                        continue
-                    if piece.can_move_to(i, j, B):
-                        new_bord = piece.move_to(i, j, B)
-                        if not is_check(side, new_bord):
-                            return False
+    if not is_make_moving_anywhere(side, B):
+        return False
     return True
 
 
@@ -109,6 +100,12 @@ def is_stalemate(side: bool, B: Board) -> bool:
     """
     if is_check(side, B):
         return False
+    if not is_make_moving_anywhere(side, B):
+        return False
+    return True
+
+
+def is_make_moving_anywhere(side: bool, B: Board) -> bool:
     for piece in B[1]:
         if piece.side == side:
             for i in range(1, B[0] + 1):
@@ -161,7 +158,7 @@ def construct_format_lines(lines):
                 raise IOError
             else:
                 continue
-        elements = [elem for elem in line.split(", ") if elem.strip()]
+        elements = [elem.strip() for elem in line.split(",") if elem.strip()]
         format_lines.append(elements)
     return format_lines
 
@@ -185,10 +182,12 @@ def build_board_one_side(board: Board, plain_format_line: list, side) -> None:
         piece_type = piece[0]
         str_location = piece[1:]
         location_tuple = location2index(str_location)
+        if not location_tuple:
+            raise IOError
         if not is_piece_in_board(board[0], location_tuple):
             raise IOError
 
-        add_to_board_build_peice(board, location_tuple[0], location_tuple[1], side, piece_type)
+        add_to_board_build_piece(board, location_tuple[0], location_tuple[1], side, piece_type)
 
 
 def is_bishop(piece_type: str) -> bool:
@@ -203,7 +202,7 @@ def is_piece_in_board(board_size: int, location_tuple: tuple) -> bool:
     return location_tuple[0] <= board_size and location_tuple[1] <= board_size
 
 
-def add_to_board_build_peice(board: Board, pos_x: int, pos_y: int, side: bool, piece_type: str) -> None:
+def add_to_board_build_piece(board: Board, pos_x: int, pos_y: int, side: bool, piece_type: str) -> None:
     if is_bishop(piece_type):
         board[1].append(Bishop(pos_x, pos_y, side))
     elif is_king(piece_type):
@@ -281,7 +280,7 @@ def conf2unicode(B: Board) -> str:
                     break
 
             if not piece_found:
-                unicode_board += "."
+                unicode_board += "\u2001"
 
         unicode_board += "\n"
     return unicode_board

@@ -29,8 +29,12 @@ class King(Piece):
 
     def can_move_to(self, pos_X: int, pos_Y: int, B: Board) -> bool:
         """checks if this king can move to coordinates pos_X, pos_Y on board B according to all chess rules"""
-        if not self.can_reach(pos_X, pos_Y, B) or chess_rule.is_piece_at(pos_X, pos_Y, B):
+        if not self.can_reach(pos_X, pos_Y, B):
             return False
+
+        if chess_rule.is_piece_at(pos_X, pos_Y, B):
+            if chess_rule.piece_at(pos_X, pos_Y, B).side == self.side:
+                return False
 
         new_board = self.build_new_board(pos_X, pos_Y, B)
         if chess_rule.is_check(self.side, new_board):
