@@ -474,9 +474,55 @@ def test_set_board_size_ng():
         set_board_size(board_size_line)
 
 
+def test_build_board_one_side_non_error_build():
+    plain_format_lines = [['5'], ['Bb5', 'Kc5', 'Bd4', 'Bc1'], ['Kb3', 'Bc3', 'Be3']]
+
+    board_size = set_board_size(plain_format_lines[const.TEXT_SIZE_LINE_INDEX])
+    board = (board_size, [])
+
+    build_board_one_side(
+        board,
+        plain_format_lines[const.BOARD_WHITE_SIDE_LINE_INDEX],
+        const.WHITE_SIDE
+    )
+
+    build_board_one_side(
+        board,
+        plain_format_lines[const.BOARD_BLACK_SIDE_LINE_INDEX],
+        const.BLACK_SIDE
+    )
+
+
+def test_is_bishop():
+    assert is_bishop("B") == True
+    assert is_bishop("K") == False
+
+
+def test_is_king():
+    assert is_king("B") == False
+    assert is_king("K") == True
+
+
+def test_is_piece_in_board():
+    assert is_piece_in_board(26, (5, 6)) == True
+    assert is_piece_in_board(5, (5, 6)) == False
+    assert is_piece_in_board(5, (6, 5)) == False
+
+
 def test_save_board():
     filename = "board_examp_write.txt"
 
     save_board(filename, B1)
     B = read_board(filename)
     comparing_boards(B, B1)
+
+
+def test_conf2unicode():
+    # 5 case
+    # test for white king, white bishop, black king, black bishop, space of matching width
+    assert conf2unicode(
+        B1) == " ♗♔  \n" \
+               "   ♗ \n" \
+               " ♚♝ ♝\n" \
+               "     \n" \
+               "  ♗  \n"

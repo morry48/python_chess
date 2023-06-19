@@ -280,7 +280,7 @@ def conf2unicode(B: Board) -> str:
                     break
 
             if not piece_found:
-                unicode_board += "."
+                unicode_board += "\u2001"
 
         unicode_board += "\n"
     return unicode_board
