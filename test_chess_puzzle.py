@@ -44,14 +44,10 @@ def test_index2locationMin():
 
 
 def test_index2locationdexCaseNgRange():
-    with pytest.raises(Exception):
-        index2location(1, 0)
-    with pytest.raises(Exception):
-        index2location(0, 1)
-    with pytest.raises(Exception):
-        index2location(27, 1)
-    with pytest.raises(Exception):
-        index2location(1, 27)
+    assert index2location(1, 0) == ""
+    assert index2location(0, 1) == ""
+    assert index2location(27, 1) == ""
+    assert index2location(1, 27) == ""
 
 
 wb1 = Bishop(2, 5, True)
@@ -110,11 +106,6 @@ def test_piece_at_white_king():
 
 def test_piece_at_white_bishop():
     assert piece_at(3, 1, B1) == wb3
-
-
-def test_piece_at_not_found_ng():
-    with pytest.raises(Exception):
-        piece_at(1, 1, B1)
 
 
 def test_piece_at_for_false_side():
@@ -359,6 +350,15 @@ def test_is_stalemate_false2():
     assert is_stalemate(True, B_stalemate) == False
 
     assert is_stalemate(False, B_stalemate) == False
+
+
+def test_is_make_moving_anywhere():
+    wk = King(1, 1, True)
+    bb = Bishop(1, 2, False)
+    bk = King(2, 3, False)
+    B = (26, [wk, bb, bk])
+    assert is_make_moving_anywhere(True, B) == True
+    assert is_make_moving_anywhere(False, B) == False
 
 
 def test_read_board1():

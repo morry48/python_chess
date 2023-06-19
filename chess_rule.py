@@ -26,13 +26,13 @@ def location2index(loc: str) -> tuple[int, int]:
 def index2location(x: int, y: int) -> str:
     """converts  pair of coordinates to corresponding location"""
     if 1 > x or x > 26 or 1 > y or y > 26:
-        raise Exception
+        return ""
     chars = list('abcdefghijklmnopqrstuvwxyz')
     try:
         alf = chars[x - 1]
         str_y = str(y)
     except:
-        raise IOError
+        return ""
     return alf + str_y
 
 
@@ -52,7 +52,6 @@ def piece_at(pos_X: int, pos_Y: int, B: Board) -> Piece:
     for piece in B[1]:
         if piece.pos_x == pos_X and piece.pos_y == pos_Y:
             return piece
-    raise Exception
 
 
 def is_out_board(x: int, y: int, B: Board):
@@ -86,16 +85,8 @@ def is_checkmate(side: bool, B: Board) -> bool:
     """
     if not is_check(side, B):
         return False
-    for piece in B[1]:
-        if piece.side == side:
-            for i in range(1, B[0] + 1):
-                for j in range(1, B[0] + 1):
-                    if not piece.can_reach(i, j, B):
-                        continue
-                    if piece.can_move_to(i, j, B):
-                        new_bord = piece.move_to(i, j, B)
-                        if not is_check(side, new_bord):
-                            return False
+    if not is_make_moving_anywhere(side, B):
+        return False
     return True
 
 
@@ -109,6 +100,12 @@ def is_stalemate(side: bool, B: Board) -> bool:
     """
     if is_check(side, B):
         return False
+    if not is_make_moving_anywhere(side, B):
+        return False
+    return True
+
+
+def is_make_moving_anywhere(side: bool, B: Board) -> bool:
     for piece in B[1]:
         if piece.side == side:
             for i in range(1, B[0] + 1):
