@@ -40,6 +40,9 @@ def main() -> None:
 
         if side:
             input_for_moving = input("Next move of White:")
+            if len(input_for_moving) < 4:
+                print("This is not a valid move.", end="")
+                continue
         else:
             found = find_black_move(board)
             board = found[0].move_to(found[1], found[2], board)

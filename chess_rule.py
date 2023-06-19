@@ -18,7 +18,7 @@ def location2index(loc: str) -> tuple[int, int]:
     except:
         return ()
 
-    if y < const.MIN_BOARD_SIZE or y > const.LIMIT_BOARD_SIZE:
+    if y < const.MIN_CELL_NUMBER or y > const.LIMIT_BOARD_SIZE:
         return ()
     return chars.index(loc[0]) + 1, y
 
@@ -185,6 +185,8 @@ def build_board_one_side(board: Board, plain_format_line: list, side) -> None:
         piece_type = piece[0]
         str_location = piece[1:]
         location_tuple = location2index(str_location)
+        if not location_tuple:
+            raise IOError
         if not is_piece_in_board(board[0], location_tuple):
             raise IOError
 
