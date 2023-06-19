@@ -378,6 +378,18 @@ def test_read_board_for_big():
     comparing_boards(B, B2)
 
 
+def test_read_board_for_min():
+    wb = Bishop(3, 2, True)
+    wk = King(3, 3, True)
+    bk = King(1, 1, False)
+    B_actual = (3, [wb, wk, bk])
+
+    B_expected = read_board("board_examp_b_min3.txt")
+    assert B_expected[0] == 3
+
+    comparing_boards(B_expected, B_actual)
+
+
 def test_read_board_for_check_situation():
     wk = King(1, 1, True)
     bb_1 = Bishop(3, 3, False)
