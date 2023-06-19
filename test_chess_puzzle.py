@@ -368,14 +368,6 @@ def test_read_board1():
     comparing_boards(B, B1)
 
 
-def test_save_board():
-    filename = "board_examp_write.txt"
-
-    save_board(filename, B1)
-    B = read_board(filename)
-    comparing_boards(B, B1)
-
-
 def test_read_board_for_big():
     bb_big = Bishop(26, 26, False)
     B2 = (26, [wb1, wk1, bk1, bb1, bb2, wb3, bb_big])
@@ -397,3 +389,35 @@ def test_read_board_for_check_situation():
     assert B[0] == 5
 
     comparing_boards(B, B2)
+
+
+def test_set_board_size():
+    board_size_line = ["9"]
+    assert set_board_size(board_size_line) == 9
+    board_size_line = ["3"]
+    assert set_board_size(board_size_line) == 3
+    board_size_line = ["26"]
+    assert set_board_size(board_size_line) == 26
+
+
+def test_set_board_size_ng():
+    board_size_line = ["2"]
+    with pytest.raises(IOError):
+        set_board_size(board_size_line)
+    board_size_line = ["27"]
+    with pytest.raises(IOError):
+        set_board_size(board_size_line)
+    board_size_line = []
+    with pytest.raises(IOError):
+        set_board_size(board_size_line)
+    board_size_line = ["26", "4"]
+    with pytest.raises(IOError):
+        set_board_size(board_size_line)
+
+
+def test_save_board():
+    filename = "board_examp_write.txt"
+
+    save_board(filename, B1)
+    B = read_board(filename)
+    comparing_boards(B, B1)
